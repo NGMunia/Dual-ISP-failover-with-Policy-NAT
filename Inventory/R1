@@ -1,0 +1,184 @@
+Building configuration...
+
+  
+Current configuration : 2402 bytes
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$4Cri$GCZPTx/3Bu8IMSYSffp3U.
+!
+aaa new-model
+!
+!
+aaa authentication login default enable
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name munia.gns3
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username Admin secret 8 $8$N7W0ed2sbjFcUz$wpWo9y3alD.Zz8621LC10mQcmU7bWz6Tmt4ur6rIFrk
+!
+redundancy
+!
+no cdp log mismatch duplex
+!
+track 1 ip sla 1
+ delay down 10 up 10
+!
+ip tcp synwait-time 5
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ ip address 10.0.0.2 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+ ip ospf network broadcast
+ ip ospf 1 area 0
+ duplex auto
+!
+interface Ethernet0/1
+ no ip address
+ shutdown
+ duplex auto
+!
+interface Ethernet0/2
+ description LINK TO ISP-1
+ ip address 44.67.28.2 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly in
+ duplex auto
+!
+interface Ethernet0/3
+ description LINK TO ISP-2
+ ip address 72.73.74.2 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly in
+ duplex auto
+!
+router ospf 1
+ router-id 2.2.2.2
+ default-information originate
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip nat inside source route-map ISP-1 interface Ethernet0/2 overload
+ip nat inside source route-map ISP-2 interface Ethernet0/3 overload
+ip route 0.0.0.0 0.0.0.0 Ethernet0/2 44.67.28.1 track 1
+ip route 0.0.0.0 0.0.0.0 Ethernet0/3 72.73.74.1 10
+ip ssh version 2
+!
+ip access-list standard nat-acl
+ permit 10.0.0.1
+ permit 192.168.10.0 0.0.0.255
+ permit 192.168.11.0 0.0.0.255
+!
+ip sla 1
+ icmp-echo 44.67.28.1 source-interface Ethernet0/2
+ frequency 10
+ip sla schedule 1 life forever start-time now
+ipv6 ioam timestamp
+!
+route-map ISP-2 permit 10
+ match ip address nat-acl
+ match interface Ethernet0/3
+!
+route-map ISP-1 permit 10
+ match ip address nat-acl
+ match track  1
+ match interface Ethernet0/2
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ logging synchronous
+ transport input ssh
+!
+!
+end
