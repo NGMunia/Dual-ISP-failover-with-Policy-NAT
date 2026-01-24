@@ -12,17 +12,10 @@ R1 = {
         'ip':'10.0.0.2'
       }
 
-<<<<<<< HEAD
 filepath = input('select the backup folder path for all your Startup Configurations: ')
 c = ConnectHandler(**R1)
 c.enable()
 # print(c.send_command('show run'))
-=======
-# backup_filepath = input('Type the backup folder path where device configurations will be stored: ')
-# c = ConnectHandler(**R1)
-# c.enable()
-# # print(c.send_command('show run'))
->>>>>>> 3d2112a79cae2fade2772d70fb8df3e4e67904d5
 
 
 # host   = c.send_command('show version', use_textfsm=True)[0]['hostname']
