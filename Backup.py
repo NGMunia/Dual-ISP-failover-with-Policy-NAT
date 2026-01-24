@@ -11,7 +11,7 @@ R1 = {
         'ip':'10.0.0.2'
       }
 
-filepath = input('Input Inventory file backup path: ')
+filepath = input('select the backup folder path for all your Startup Configurations: ')
 c = ConnectHandler(**R1)
 c.enable()
 # print(c.send_command('show run'))

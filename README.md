@@ -27,7 +27,35 @@
 
 ## Configuration on Cisco Router Policy NAT
 
-![Topology](/NAT.PNG)
+```bash
+
+no ip http secure-server
+ip nat inside source route-map ISP-1 interface Ethernet0/2 overload
+ip nat inside source route-map ISP-2 interface Ethernet0/3 overload
+ip route 0.0.0.0 0.0.0.0 Ethernet0/2 44.67.28.1 track 1
+ip route 0.0.0.0 0.0.0.0 Ethernet0/3 72.73.74.1 10
+ip ssh version 2
+!
+ip access-list standard nat-acl
+ permit 10.0.0.1
+ permit 192.168.10.0 0.0.0.255
+ permit 192.168.11.0 0.0.0.255
+!
+ip sla 1
+ icmp-echo 44.67.28.1 source-interface Ethernet0/2
+ frequency 10
+ip sla schedule 1 life forever start-time now
+ipv6 ioam timestamp
+!
+route-map ISP-2 permit 10
+ match ip address nat-acl
+ match interface Ethernet0/3
+!
+route-map ISP-1 permit 10
+ match ip address nat-acl
+ match track  1
+ match interface Ethernet0/2
+ ```
 
 ---
 
