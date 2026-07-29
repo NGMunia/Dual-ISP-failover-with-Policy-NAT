@@ -74,3 +74,11 @@ GATEWAY-ROUTER#
 ![Topology](monitor.png)
 
 ![Topology](monitor1.png)
+
+
+
+## Images used:
+- Routers/firewalls: i86bi_LinuxL3-AdvEnterpriseK9-M2_157_3_May_2018.bin
+- Switches: i86bi_linux_l2-adventerprisek9-ms.SSA.high_iron_20180510.bin
+- Zabbix server: Ubutu LTS 22.04 VM
+- Admin: Windows 8.1 VM
