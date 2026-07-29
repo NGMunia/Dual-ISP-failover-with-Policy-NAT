@@ -74,7 +74,7 @@ GATEWAY-ROUTER#
 
 Ubuntu VM is used as Zabbix server (NMS in SNMP sense)
 
-Network devices send SNMPv2 traps to the NMS server; equally NMS polls SNMP OIDs for changes on the network devices that include:
+Network devices use SNMPv2 to send traps to the NMS server; equally NMS polls SNMP OIDs for changes on the network devices that include:
 - OSPF changes
 - CPU and Memory utilization
 - Interface utilization
