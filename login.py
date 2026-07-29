@@ -10,6 +10,7 @@ while True:
         print('Login successful!')
         break
     else:
+        print('USername and/or password incorrect!')
         username = input('Username: ')
         password = getpass('password: ')
         secret   = getpass('secret: ')

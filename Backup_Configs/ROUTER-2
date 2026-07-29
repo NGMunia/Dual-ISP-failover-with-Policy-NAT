@@ -1,10 +1,10 @@
-Using 3098 out of 131072 bytes
+Using 3446 out of 131072 bytes
 !
-! Last configuration change at 07:01:25 UTC Wed Jul 22 2026 by Automation
+! Last configuration change at 10:23:42 EAT Wed Jul 29 2026 by Automation
 !
 version 15.7
-service timestamps debug datetime msec
-service timestamps log datetime msec
+service timestamps debug datetime localtime show-timezone
+service timestamps log datetime localtime show-timezone
 no service password-encryption
 !
 hostname ROUTER-2
@@ -32,6 +32,7 @@ aaa session-id common
 !
 !
 process cpu threshold type total rising 80 interval 60 falling 60 interval 60
+clock timezone EAT 3 0
 mmi polling-interval 60
 no mmi auto-configure
 no mmi pvc
@@ -169,6 +170,13 @@ control-plane
 !
 !
 !
+banner login ^C
+**************************************************
+             ROUTER-2
+     DUAL-ISP FAILOVER WITH POLICY-NAT
+ Unauthorized access is strictly forbidden
+**************************************************
+^C
 !
 line con 0
  exec-timeout 0 0
@@ -183,5 +191,8 @@ line vty 0 4
  logging synchronous
  transport input ssh
 !
+ntp source Ethernet0/0
+ntp update-calendar
+ntp server 10.48.0.6
 !
 end

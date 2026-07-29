@@ -1,6 +1,7 @@
-Using 4822 out of 32768 bytes
+Using 5125 out of 32768 bytes
 !
-! Last configuration change at 16:08:57 EAT Sun Jul 26 2026 by Automation
+! Last configuration change at 10:24:36 EAT Wed Jul 29 2026 by Automation
+! NVRAM config last updated at 10:24:36 EAT Wed Jul 29 2026 by Automation
 !
 version 15.7
 service timestamps debug datetime localtime show-timezone
@@ -220,6 +221,13 @@ control-plane
 !
 !
 !
+banner login ^C
+**************************************************
+             GATEWAY-ROUTER
+     DUAL-ISP FAILOVER WITH POLICY-NAT
+ Unauthorized access is strictly forbidden
+**************************************************
+^C
 !
 line con 0
  exec-timeout 0 0

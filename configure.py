@@ -75,3 +75,47 @@ from itertools import chain
 #     print(c.send_config_set(commands))
 #     c.save_config()
 #     c.disconnect()
+
+
+# for devices in chain(routers.values(), firewalls.values()):
+#     c = ConnectHandler(**devices)
+#     c.enable()
+
+#     hostname = c.send_command('show version', use_textfsm=True)[0]['hostname']
+
+#     intf = input(f'NTP source interface for {hostname}:  ')
+
+#     commands = ['ntp server 10.48.0.6',
+#                 f'ntp source {intf}',
+#                 'ntp update-calendar',
+#                 'clock timezone EAT 3',
+#                 'service timestamps log datetime localtime show-timezone',
+#                 'service timestamps debug datetime localtime show-timezone']
+#     print(c.send_config_set(commands),'\n')
+#     c.save_config()
+#     c.disconnect()
+
+
+# for devices in chain(routers.values(),firewalls.values(),gateway.values()):
+#     c = ConnectHandler(**devices)
+#     c.enable()
+
+#     hostname = c.send_command('show version',use_textfsm=True)[0]['hostname']
+
+#     new_hostname = input(f'create a new hostname for {hostname}: ')
+
+#     commands = [f'hostname {new_hostname}',
+#                 'banner login @',
+#                f'{"*"*50}',
+#                f'{" "*13}{new_hostname}',
+#                f'{" "*5}DUAL-ISP FAILOVER WITH POLICY-NAT',
+#                f'{" "}Unauthorized access is strictly forbidden',
+#                f'{"*"*50}',
+#                '@']
+#     print(c.send_config_set(commands),'\n')
+#     c.save_config()
+#     c.disconnect()
+
+
+
+

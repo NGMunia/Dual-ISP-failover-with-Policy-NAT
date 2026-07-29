@@ -1,6 +1,7 @@
-Using 3907 out of 32768 bytes
+Using 4237 out of 32768 bytes
 !
-! Last configuration change at 10:11:48 EAT Thu Jul 23 2026 by Automation
+! Last configuration change at 10:24:20 EAT Wed Jul 29 2026 by Automation
+! NVRAM config last updated at 10:24:20 EAT Wed Jul 29 2026 by Automation
 !
 version 15.7
 service timestamps debug datetime localtime show-timezone
@@ -191,6 +192,13 @@ control-plane
 !
 !
 !
+banner login ^C
+**************************************************
+             PERIMETER-FIREWALL
+     DUAL-ISP FAILOVER WITH POLICY-NAT
+ Unauthorized access is strictly forbidden
+**************************************************
+^C
 !
 line con 0
  exec-timeout 0 0
@@ -206,6 +214,7 @@ line vty 0 4
  monitor
  transport input ssh
 !
+ntp source Ethernet0/3
 ntp update-calendar
 ntp server 10.48.0.6
 !
