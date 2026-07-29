@@ -71,6 +71,35 @@ GATEWAY-ROUTER#
 ----
 
 ## Monitoring on Zabbix server
+
+Ubuntu VM is used as Zabbix server (NMS in SNMP sense)
+
+Network devices send SNMPv2 traps to the NMS server; equally NMS polls SNMP OIDs for changes on the network devices that include:
+- OSPF changes
+- CPU and Memory utilization
+- Interface utilization
+
+```bash
+snmp-server community DEVICE-SNMP RO SNMP-ACL
+snmp-server trap-source Ethernet0/0
+snmp-server chassis-id Gateway
+snmp-server enable traps ospf state-change
+snmp-server enable traps ospf errors
+snmp-server enable traps ospf retransmit
+snmp-server enable traps ospf lsa
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change
+snmp-server enable traps ospf cisco-specific state-change shamlink interface
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor
+snmp-server enable traps ospf cisco-specific errors
+snmp-server enable traps ospf cisco-specific retransmit
+snmp-server enable traps ospf cisco-specific lsa
+snmp-server enable traps memory bufferpeak
+snmp-server enable traps config
+snmp-server enable traps cpu threshold
+snmp-server host 192.168.21.100 version 2c DEVICE-SNMP
+
+```
+
 ![Topology](monitor.png)
 
 ![Topology](monitor1.png)
