@@ -71,4 +71,5 @@ GATEWAY-ROUTER#
 
 ## Monitoring on Zabbix server
 ![Topology](monitor.png)
+
 ![Topology](monitor1.png)
