@@ -1,13 +1,13 @@
-Using 3125 out of 131072 bytes
+Using 3907 out of 32768 bytes
 !
-! Last configuration change at 07:01:22 UTC Wed Jul 22 2026 by Automation
+! Last configuration change at 10:11:48 EAT Thu Jul 23 2026 by Automation
 !
 version 15.7
-service timestamps debug datetime msec
-service timestamps log datetime msec
+service timestamps debug datetime localtime show-timezone
+service timestamps log datetime localtime show-timezone
 no service password-encryption
 !
-hostname R1
+hostname PERIMETER-FIREWALL
 !
 boot-start-marker
 boot-end-marker
@@ -16,7 +16,7 @@ boot-end-marker
 logging discriminator EXCESS severity drops 6 msg-body drops EXCESSCOLL 
 logging buffered 50000
 logging console discriminator EXCESS
-enable secret 8 $8$COQhGPTkFQAviz$WGBlxLJbYycmKy/dAqB8o2H.c7LsdIK1oDMaxZ/8CKY
+enable secret 8 $8$JnYqVMYVVVpTBj$9Vyhqkw2y9KE4Y6W6lo9WAiMhpVveVQZved3bMZr.k6
 !
 aaa new-model
 !
@@ -32,6 +32,7 @@ aaa session-id common
 !
 !
 process cpu threshold type total rising 80 interval 60 falling 60 interval 60
+clock timezone EAT 3 0
 mmi polling-interval 60
 no mmi auto-configure
 no mmi pvc
@@ -73,17 +74,37 @@ multilink bundle-name authenticated
 !
 !
 !
-username Automation secret 8 $8$29gn55cZQk2tmD$s0BjEckevCERTQUAHwfxSsaIhu7SLk1g/66fmDVEOTY
+username Automation secret 8 $8$G/MhRpyjePk/Ej$Kuyb855vEJpH8gJh5Spp7PqvsMa9f99DjEhigvcZlpA
 !
 redundancy
 !
 !
 ip tcp synwait-time 5
 !
-policy-map INTERNET-POLICY
- class class-default
-  police cir 5000000 conform-action transmit  exceed-action drop 
+class-map type inspect match-all OUTSIDE-INSIDE-CLASS
+ match access-group name OUTSIDE-INSIDE-ACL
+class-map type inspect match-any INSIDE-OUTSIDE-CLASS
+ match protocol tcp
+ match protocol udp
+ match protocol icmp
 !
+policy-map type inspect INSIDE-OUTSIDE-POLICY
+ class type inspect INSIDE-OUTSIDE-CLASS
+  inspect 
+ class class-default
+  drop log
+policy-map type inspect OUTSIDE-INSIDE-POLICY
+ class type inspect OUTSIDE-INSIDE-CLASS
+  pass
+ class class-default
+  drop log
+!
+zone security INSIDE
+zone security OUTSIDE
+zone-pair security INSIDE-OUTSIDE-ZONE source INSIDE destination OUTSIDE
+ service-policy type inspect INSIDE-OUTSIDE-POLICY
+zone-pair security OUTSIDE-INSIDE-ZONE source OUTSIDE destination INSIDE
+ service-policy type inspect OUTSIDE-INSIDE-POLICY
 ! 
 !
 !
@@ -98,12 +119,11 @@ policy-map INTERNET-POLICY
 !
 !
 interface Ethernet0/0
- ip address 192.168.10.1 255.255.255.0
- ip helper-address 10.21.0.2
- ip ospf 1 area 0
+ ip address 10.48.0.2 255.255.255.252
+ zone-member security INSIDE
+ ip ospf network point-to-point
+ ip ospf 1 area 48
  duplex auto
- service-policy input INTERNET-POLICY
- service-policy output INTERNET-POLICY
 !
 interface Ethernet0/1
  no ip address
@@ -114,14 +134,14 @@ interface Ethernet0/2
  duplex auto
 !
 interface Ethernet0/3
- description LINK TO CORE SWITCH
- ip address 192.168.0.2 255.255.255.0
- ip ospf priority 0
- ip ospf 1 area 0
+ ip address 10.48.0.5 255.255.255.252
+ zone-member security OUTSIDE
+ ip ospf network point-to-point
+ ip ospf 1 area 48
  duplex auto
 !
 router ospf 1
- router-id 3.3.3.3
+ router-id 6.6.6.6
  auto-cost reference-bandwidth 100000
 !
 ip forward-protocol nd
@@ -134,6 +154,8 @@ ip ssh version 2
 ip access-list standard SNMP-ACL
  permit 192.168.21.100
 !
+ip access-list extended OUTSIDE-INSIDE-ACL
+ permit ip host 10.48.0.6 any
 ip access-list extended VTY-ACL
  permit tcp 192.168.10.0 0.0.0.255 any eq 22
  permit tcp 192.168.21.0 0.0.0.255 any eq 22
@@ -142,8 +164,7 @@ ip access-list extended VTY-ACL
 ipv6 ioam timestamp
 !
 snmp-server community DEVICE-SNMP RO SNMP-ACL
-snmp-server trap-source Ethernet0/0
-snmp-server chassis-id R1
+snmp-server chassis-id IOS-ZBF
 snmp-server enable traps ospf state-change
 snmp-server enable traps ospf errors
 snmp-server enable traps ospf retransmit
@@ -182,7 +203,10 @@ line aux 0
 line vty 0 4
  access-class VTY-ACL in
  logging synchronous
+ monitor
  transport input ssh
 !
+ntp update-calendar
+ntp server 10.48.0.6
 !
 end

@@ -1,0 +1,252 @@
+Using 5623 out of 131072 bytes
+!
+! Last configuration change at 06:48:34 UTC Fri Jul 24 2026 by Automation
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname INTERNAL-FIREWALL
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging discriminator EXCESS severity drops 6 msg-body drops EXCESSCOLL 
+logging buffered 50000
+logging console discriminator EXCESS
+enable secret 8 $8$CWLdwg73oi6UbT$rKTeQSepr6mgDxCIq8k91ENW58BTu2gHms5/nTlTldE
+!
+aaa new-model
+!
+!
+aaa authentication login default local-case enable
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+process cpu threshold type total rising 80 interval 60 falling 60 interval 60
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name munia.local
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username Automation secret 8 $8$SaSmd1iJyfSwgj$91vN3jhjCgNb9NL5YmG5FBoL.D/hcOsrDtK3DZ9lRRQ
+!
+redundancy
+!
+!
+ip tcp synwait-time 5
+!
+class-map type inspect match-all INSIDE-OUTSIDE-CLASS
+ match access-group name INSIDE-OUTSIDE-ACL
+class-map type inspect match-all OUTSIDE-INSIDE-CLASS
+ match access-group name OUTSIDE-INSIDE-ACL
+class-map match-all CoPP-MGT-CLASS
+ match access-group name CoPP-MGT-ACL
+class-map match-all CoPP-OSPF-CLASS
+ match access-group name CoPP-OSPF-MGT
+!
+policy-map type inspect INSIDE-OUTSIDE-POLICY
+ class type inspect INSIDE-OUTSIDE-CLASS
+  inspect 
+ class class-default
+  drop
+policy-map type inspect OUTSIDE-INSIDE-POLICY
+ class type inspect OUTSIDE-INSIDE-CLASS
+  inspect 
+ class class-default
+  drop
+policy-map CoPP-POLICY
+ class CoPP-MGT-CLASS
+  police cir 12000 conform-action transmit  exceed-action drop 
+ class CoPP-OSPF-CLASS
+  police cir 8000 conform-action transmit  exceed-action transmit 
+ class class-default
+  police cir 12000 conform-action transmit  exceed-action drop 
+!
+zone security INSIDE
+zone security OUTSIDE
+zone-pair security INSIDE-OUTSIDE-ZONE source INSIDE destination OUTSIDE
+ service-policy type inspect INSIDE-OUTSIDE-POLICY
+zone-pair security OUTSIDE-INSIDE-ZONE source OUTSIDE destination INSIDE
+ service-policy type inspect OUTSIDE-INSIDE-POLICY
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ description LINK TO DHCP-DNS-NTP SERVICES
+ ip address 192.168.30.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly in
+ zone-member security INSIDE
+ duplex auto
+!
+interface Ethernet0/0.21
+ description LINK TO OSPF-AREA-21
+ encapsulation dot1Q 21
+ ip address 192.168.21.1 255.255.255.0
+ ip nbar protocol-discovery
+ zone-member security INSIDE
+ ip ospf 1 area 21
+!
+interface Ethernet0/1
+ no ip address
+ duplex auto
+!
+interface Ethernet0/2
+ no ip address
+ duplex auto
+!
+interface Ethernet0/3
+ description LINK TO CORE SWITCH
+ ip address 10.21.0.2 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly in
+ zone-member security OUTSIDE
+ ip ospf network point-to-point
+ ip ospf 1 area 21
+ duplex auto
+!
+router ospf 1
+ router-id 2.2.2.2
+ auto-cost reference-bandwidth 100000
+ passive-interface Ethernet0/0.21
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip nat inside source list INSIDE-OUTSIDE-ACL interface Ethernet0/3 overload
+ip nat inside source static udp 192.168.30.100 53 10.21.0.2 53 extendable
+ip nat inside source static udp 192.168.30.100 67 10.21.0.2 67 extendable
+ip nat inside source static udp 192.168.30.100 123 10.21.0.2 123 extendable
+ip ssh version 2
+!
+ip access-list standard SNMP-ACL
+ permit 192.168.21.100
+!
+ip access-list extended CoPP-MGT-ACL
+ permit tcp 192.168.21.0 0.0.0.255 any eq 22
+ permit tcp 192.168.10.0 0.0.0.255 any eq 22
+ permit udp host 192.168.11.100 any eq snmp
+ip access-list extended CoPP-OSPF-MGT
+ permit ospf any any
+ip access-list extended INSIDE-OUTSIDE-ACL
+ permit udp host 192.168.30.100 any eq domain
+ permit ip 192.168.21.0 0.0.0.255 any
+ permit udp host 192.168.30.100 any eq ntp
+ permit icmp host 192.168.30.100 any
+ip access-list extended OUTSIDE-INSIDE-ACL
+ permit udp any host 192.168.30.100 eq domain
+ permit udp any host 192.168.30.100 eq bootps
+ permit udp any host 192.168.30.100 eq ntp
+ permit udp any host 192.168.21.100 eq snmptrap
+ permit udp any host 192.168.21.100 eq 2055
+ permit ip 192.168.10.0 0.0.0.255 192.168.21.0 0.0.0.255
+ip access-list extended VTY-ACL
+ permit tcp 192.168.10.0 0.0.0.255 any eq 22
+ permit tcp 192.168.21.0 0.0.0.255 any eq 22
+ deny   tcp any any log
+!
+ipv6 ioam timestamp
+!
+snmp-server community DEVICE-SNMP RO SNMP-ACL
+snmp-server trap-source Ethernet0/0.21
+snmp-server chassis-id INTERNAL-FIREWALL
+snmp-server enable traps ospf state-change
+snmp-server enable traps ospf errors
+snmp-server enable traps ospf retransmit
+snmp-server enable traps ospf lsa
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change
+snmp-server enable traps ospf cisco-specific state-change shamlink interface
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor
+snmp-server enable traps ospf cisco-specific errors
+snmp-server enable traps ospf cisco-specific retransmit
+snmp-server enable traps ospf cisco-specific lsa
+snmp-server enable traps memory bufferpeak
+snmp-server enable traps config
+snmp-server enable traps cpu threshold
+snmp-server host 192.168.21.100 version 2c DEVICE-SNMP 
+!
+!
+!
+!
+control-plane
+ service-policy input CoPP-POLICY
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class VTY-ACL in
+ logging synchronous
+ transport input ssh
+!
+!
+end

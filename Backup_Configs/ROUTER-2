@@ -1,13 +1,13 @@
-Using 3125 out of 131072 bytes
+Using 3098 out of 131072 bytes
 !
-! Last configuration change at 07:01:22 UTC Wed Jul 22 2026 by Automation
+! Last configuration change at 07:01:25 UTC Wed Jul 22 2026 by Automation
 !
 version 15.7
 service timestamps debug datetime msec
 service timestamps log datetime msec
 no service password-encryption
 !
-hostname R1
+hostname ROUTER-2
 !
 boot-start-marker
 boot-end-marker
@@ -16,7 +16,7 @@ boot-end-marker
 logging discriminator EXCESS severity drops 6 msg-body drops EXCESSCOLL 
 logging buffered 50000
 logging console discriminator EXCESS
-enable secret 8 $8$COQhGPTkFQAviz$WGBlxLJbYycmKy/dAqB8o2H.c7LsdIK1oDMaxZ/8CKY
+enable secret 8 $8$aH6QAHFSQT8Zvj$YN95qajGcB63omXqNfgrtFxD9zrM2S/yrcBLSLWtxlY
 !
 aaa new-model
 !
@@ -73,7 +73,7 @@ multilink bundle-name authenticated
 !
 !
 !
-username Automation secret 8 $8$29gn55cZQk2tmD$s0BjEckevCERTQUAHwfxSsaIhu7SLk1g/66fmDVEOTY
+username Automation secret 8 $8$cq7vkmiFKuNWED$5jdITmGKEbxqOk339vOjiWHnhshILlZuUE5k4mhTZLw
 !
 redundancy
 !
@@ -98,7 +98,7 @@ policy-map INTERNET-POLICY
 !
 !
 interface Ethernet0/0
- ip address 192.168.10.1 255.255.255.0
+ ip address 192.168.11.1 255.255.255.0
  ip helper-address 10.21.0.2
  ip ospf 1 area 0
  duplex auto
@@ -114,14 +114,13 @@ interface Ethernet0/2
  duplex auto
 !
 interface Ethernet0/3
- description LINK TO CORE SWITCH
- ip address 192.168.0.2 255.255.255.0
+ ip address 192.168.0.3 255.255.255.0
  ip ospf priority 0
  ip ospf 1 area 0
  duplex auto
 !
 router ospf 1
- router-id 3.3.3.3
+ router-id 4.4.4.4
  auto-cost reference-bandwidth 100000
 !
 ip forward-protocol nd
@@ -143,7 +142,7 @@ ipv6 ioam timestamp
 !
 snmp-server community DEVICE-SNMP RO SNMP-ACL
 snmp-server trap-source Ethernet0/0
-snmp-server chassis-id R1
+snmp-server chassis-id R2
 snmp-server enable traps ospf state-change
 snmp-server enable traps ospf errors
 snmp-server enable traps ospf retransmit
