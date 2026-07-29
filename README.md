@@ -7,6 +7,7 @@
 - If tracking goes down, routing switches automatically to backup ISP connection, until the main connection is re-established.
 - The router does this with the help of Policy NAT using route maps mapping to tracking, ISP-facing interfaces, and subnets to be NATed.
 - Zabbix server is used to monitor all network devices.
+- The internal DNS resolves internanal domain names and also fowards external DNS resolution requests.
 
 ![Routing](https://img.shields.io/badge/Routing-BGP%20%7C%20OSPF-orange)
 ![NAT](https://img.shields.io/badge/NAT-Policy_NAT-green)
