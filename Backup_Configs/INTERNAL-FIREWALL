@@ -1,6 +1,6 @@
-Using 5983 out of 131072 bytes
+Using 5380 out of 131072 bytes
 !
-! Last configuration change at 10:24:07 EAT Wed Jul 29 2026 by Automation
+! Last configuration change at 08:33:54 EAT Thu Jul 30 2026 by Automation
 !
 version 15.7
 service timestamps debug datetime localtime show-timezone
@@ -85,10 +85,6 @@ class-map type inspect match-all INSIDE-OUTSIDE-CLASS
  match access-group name INSIDE-OUTSIDE-ACL
 class-map type inspect match-all OUTSIDE-INSIDE-CLASS
  match access-group name OUTSIDE-INSIDE-ACL
-class-map match-all CoPP-MGT-CLASS
- match access-group name CoPP-MGT-ACL
-class-map match-all CoPP-OSPF-CLASS
- match access-group name CoPP-OSPF-MGT
 !
 policy-map type inspect INSIDE-OUTSIDE-POLICY
  class type inspect INSIDE-OUTSIDE-CLASS
@@ -100,13 +96,6 @@ policy-map type inspect OUTSIDE-INSIDE-POLICY
   inspect 
  class class-default
   drop
-policy-map CoPP-POLICY
- class CoPP-MGT-CLASS
-  police cir 12000 conform-action transmit  exceed-action drop 
- class CoPP-OSPF-CLASS
-  police cir 8000 conform-action transmit  exceed-action transmit 
- class class-default
-  police cir 12000 conform-action transmit  exceed-action drop 
 !
 zone security INSIDE
 zone security OUTSIDE
@@ -175,17 +164,12 @@ ip nat inside source list INSIDE-OUTSIDE-ACL interface Ethernet0/3 overload
 ip nat inside source static udp 192.168.30.100 53 10.21.0.2 53 extendable
 ip nat inside source static udp 192.168.30.100 67 10.21.0.2 67 extendable
 ip nat inside source static udp 192.168.30.100 123 10.21.0.2 123 extendable
+ip nat inside source static tcp 192.168.30.100 22 10.21.0.2 220 extendable
 ip ssh version 2
 !
 ip access-list standard SNMP-ACL
  permit 192.168.21.100
 !
-ip access-list extended CoPP-MGT-ACL
- permit tcp 192.168.21.0 0.0.0.255 any eq 22
- permit tcp 192.168.10.0 0.0.0.255 any eq 22
- permit udp host 192.168.11.100 any eq snmp
-ip access-list extended CoPP-OSPF-MGT
- permit ospf any any
 ip access-list extended INSIDE-OUTSIDE-ACL
  permit udp host 192.168.30.100 any eq domain
  permit ip 192.168.21.0 0.0.0.255 any
@@ -194,10 +178,10 @@ ip access-list extended INSIDE-OUTSIDE-ACL
 ip access-list extended OUTSIDE-INSIDE-ACL
  permit udp any host 192.168.30.100 eq domain
  permit udp any host 192.168.30.100 eq bootps
- permit udp any host 192.168.30.100 eq ntp
  permit udp any host 192.168.21.100 eq snmptrap
  permit udp any host 192.168.21.100 eq 2055
  permit ip 192.168.10.0 0.0.0.255 192.168.21.0 0.0.0.255
+ permit tcp 192.168.10.0 0.0.0.255 host 192.168.30.100 eq 22
 ip access-list extended VTY-ACL
  permit tcp 192.168.10.0 0.0.0.255 any eq 22
  permit tcp 192.168.21.0 0.0.0.255 any eq 22
@@ -227,7 +211,6 @@ snmp-server host 192.168.21.100 version 2c DEVICE-SNMP
 !
 !
 control-plane
- service-policy input CoPP-POLICY
 !
 !
 !

@@ -1,27 +1,27 @@
 
-from netmiko import ConnectHandler
-from Network_devices.devices import routers, firewalls, gateway
-from itertools import chain
+# from netmiko import ConnectHandler
+# from Network_devices.devices import routers, firewalls, gateway, core
+# from itertools import chain
 
 
-##Configuring IP helper address
+# #Configuring IP helper address
 
-# for devices in chain(routers.values()):
-#     c = ConnectHandler(**devices)
-#     c.enable()
+# # for devices in chain(core.values()):
+# #     c = ConnectHandler(**devices)
+# #     c.enable()
 
-#     commands = ['interface e0/0',
-#                 'ip helper-address 10.21.0.2']
+# #     commands = ['interface e0/0',
+# #                 'ip helper-address 10.21.0.2']
     
-#     print(c.send_config_set(commands))
-#     c.save_config()
-#     c.disconnect()
+# #     print(c.send_config_set(commands))
+# #     c.save_config()
+# #     c.disconnect()
 
 
 
-## COnfiguring SNMP on all devices:
+# # COnfiguring SNMP on all devices:
 
-# for devices in chain(routers.values(), firewalls.values(),gateway.values()):
+# for devices in chain(core.values()):
 #     c = ConnectHandler(**devices)
 #     c.enable()
 
@@ -36,7 +36,7 @@ from itertools import chain
 #                 'snmp-server enable traps config',
 #                 'snmp-server enable traps ospf',
 #                 'snmp-server enable traps cpu',
-#                 'snmp-server enable traps memory',
+#                 # 'snmp-server enable traps memory',
 #                 f'snmp-server chassis-id {host}',
 #                 'snmp-server community DEVICE-SNMP SNMP-ACL',
 #                 'snmp-server host 192.168.21.100 version 2c DEVICE-SNMP'
@@ -44,7 +44,7 @@ from itertools import chain
 #     print(c.send_config_set(commands),'\n')
 
 
-# for devices in chain(routers.values(), firewalls.values(), gateway.values()):
+# for devices in chain(core.values()):
 #     c = ConnectHandler(**devices)
 #     c.enable()
 
@@ -60,24 +60,24 @@ from itertools import chain
 #     c.disconnect()
 
 
-## CONFIGURING QoS ON LAN ROUTERS
-# for devices in chain (routers.values()):
-#     c = ConnectHandler(**devices)
-#     c.enable()
+# # # CONFIGURING QoS ON LAN ROUTERS
+# # for devices in chain (core.values()):
+# #     c = ConnectHandler(**devices)
+# #     c.enable()
 
-#     commands = ['policy-map INTERNET-POLICY',
-#                 'class class-default',
-#                 'police cir 5000k conform-action transmit exceed-action drop',
-#                 'interface e0/0',
-#                 'service-policy input INTERNET-POLICY',
-#                 'service-policy output INTERNET-POLICY']
+# #     commands = ['policy-map INTERNET-POLICY',
+# #                 'class class-default',
+# #                 'police cir 5000k conform-action transmit exceed-action drop',
+# #                 'interface e0/0',
+# #                 'service-policy input INTERNET-POLICY',
+# #                 'service-policy output INTERNET-POLICY']
     
-#     print(c.send_config_set(commands))
-#     c.save_config()
-#     c.disconnect()
+# #     print(c.send_config_set(commands))
+# #     c.save_config()
+# #     c.disconnect()
 
 
-# for devices in chain(routers.values(), firewalls.values()):
+# for devices in chain(core.values()):
 #     c = ConnectHandler(**devices)
 #     c.enable()
 
@@ -96,7 +96,7 @@ from itertools import chain
 #     c.disconnect()
 
 
-# for devices in chain(routers.values(),firewalls.values(),gateway.values()):
+# for devices in chain(core.values()):
 #     c = ConnectHandler(**devices)
 #     c.enable()
 

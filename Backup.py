@@ -1,6 +1,6 @@
 
 
-from Network_devices.devices import routers, firewalls, gateway
+from Network_devices.devices import routers, firewalls, gateway, core
 from netmiko import ConnectHandler
 from csv import writer
 from itertools import chain
@@ -10,7 +10,7 @@ from itertools import chain
 
 filepath = input('select the backup folder path for all your Startup Configurations: ')
 
-for devices in chain(routers.values(), firewalls.values(), gateway.values()):   
+for devices in chain(routers.values(), firewalls.values(), gateway.values(),core.values()):   
     c = ConnectHandler(**devices)
     c.enable()
 # print(c.send_command('show run'))

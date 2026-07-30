@@ -45,3 +45,13 @@ gateway =     {  'R1': {
                        'ip': '10.48.0.6'
                        }
               }
+
+core    =     {
+                'core': {
+                       'device_type': 'cisco_ios',
+                       'username': username,
+                       'password': password,
+                       'secret': secret,
+                       'ip': '10.21.0.1'
+                       }
+              }

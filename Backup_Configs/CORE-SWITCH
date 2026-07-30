@@ -1,0 +1,214 @@
+Using 4121 out of 131072 bytes
+!
+! Last configuration change at 15:32:14 EAT Wed Jul 29 2026 by Automation
+!
+version 15.2
+service timestamps debug datetime localtime show-timezone
+service timestamps log datetime localtime show-timezone
+no service password-encryption
+service compress-config
+!
+hostname CORE-SWITCH
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging discriminator EXCESS severity drops 6 msg-body drops EXCESSCOLL 
+logging buffered 50000
+logging console discriminator EXCESS
+enable secret 8 $8$DdRR44YlLoZyLN$GOqvNZxMwPG3RdiXPtNPx5ql8u4VtGkqOHi8kTAmQVY
+!
+username Automation secret 8 $8$uw5IzHfJfIiT5N$u.wpbIw07jhk3w4ASn5Fhm48wr9Upt8wZbBa2xpicvM
+aaa new-model
+!
+!
+aaa authentication login default local-case enable
+!
+!
+!
+!
+!
+!
+aaa session-id common
+process cpu threshold type total rising 80 interval 60 falling 60 interval 60
+clock timezone EAT 3 0
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+no ip domain-lookup
+ip domain-name munia.local
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ switchport trunk allowed vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Ethernet0/0
+ switchport trunk allowed vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 1 mode active
+!
+interface Ethernet0/1
+ switchport trunk allowed vlan 10
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 1 mode active
+!
+interface Ethernet0/2
+ shutdown
+!
+interface Ethernet0/3
+ shutdown
+!
+interface Ethernet1/0
+ shutdown
+!
+interface Ethernet1/1
+ shutdown
+!
+interface Ethernet1/2
+ shutdown
+!
+interface Ethernet1/3
+ shutdown
+!
+interface Ethernet2/0
+ shutdown
+!
+interface Ethernet2/1
+ shutdown
+!
+interface Ethernet2/2
+ shutdown
+!
+interface Ethernet2/3
+ shutdown
+!
+interface Ethernet3/0
+ shutdown
+!
+interface Ethernet3/1
+ shutdown
+!
+interface Ethernet3/2
+ description LINK TO INTERNAL FIREWALL
+ no switchport
+ ip address 10.21.0.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf 1 area 21
+!
+interface Ethernet3/3
+ no switchport
+ ip address 10.48.0.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf 1 area 48
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan10
+ ip address 192.168.0.1 255.255.255.0
+ ip ospf priority 100
+ ip ospf prefix-suppression
+ ip ospf 1 area 0
+!
+router ospf 1
+ router-id 1.1.1.1
+ auto-cost reference-bandwidth 100000
+ area 0 range 192.168.8.0 255.255.248.0
+!
+ip forward-protocol nd
+!
+ip tcp synwait-time 5
+ip http server
+!
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+ip access-list standard SNMP-ACL
+ permit 192.168.21.100
+!
+ip access-list extended VTY-ACL
+ permit tcp 192.168.10.0 0.0.0.255 any eq 22
+ permit tcp 192.168.21.0 0.0.0.255 any eq 22
+ deny   tcp any any log
+!
+!
+!
+snmp-server community DEVICE-SNMP RO SNMP-ACL
+snmp-server trap-source Ethernet3/2
+snmp-server chassis-id CORE
+snmp-server enable traps ospf state-change
+snmp-server enable traps ospf errors
+snmp-server enable traps ospf retransmit
+snmp-server enable traps ospf lsa
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change
+snmp-server enable traps ospf cisco-specific state-change shamlink interface
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor
+snmp-server enable traps ospf cisco-specific errors
+snmp-server enable traps ospf cisco-specific retransmit
+snmp-server enable traps ospf cisco-specific lsa
+snmp-server host 192.168.21.100 version 2c DEVICE-SNMP 
+!
+!
+!
+control-plane
+!
+banner login ^C
+**************************************************
+             CORE-SWITCH
+     DUAL-ISP FAILOVER WITH POLICY-NAT
+ Unauthorized access is strictly forbidden
+**************************************************
+^C
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class VTY-ACL in
+ logging synchronous
+ transport input ssh
+!
+ntp source Ethernet3/3
+ntp update-calendar
+ntp server 10.48.0.6
+!
+!
+end
