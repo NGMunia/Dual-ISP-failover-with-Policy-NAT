@@ -6,7 +6,7 @@ from csv import writer
 from itertools import chain
 
 
-
+## BACKING UP START-UP CONFIGURATIONS:
 
 filepath = input('select the backup folder path for all your Startup Configurations: ')
 
