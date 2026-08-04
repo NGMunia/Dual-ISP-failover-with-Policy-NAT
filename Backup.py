@@ -2,7 +2,6 @@
 
 from Network_devices.devices import routers, firewalls, gateway, core
 from netmiko import ConnectHandler
-from csv import writer
 from itertools import chain
 
 
