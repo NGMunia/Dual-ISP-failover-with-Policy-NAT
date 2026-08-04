@@ -1,7 +1,9 @@
 
+# Device Login Credentials.
+
 from getpass import getpass
 
-username = input('Username: ')
+username =   input('Username: ')
 password = getpass('password: ')
 secret   = getpass('secret: ')
 
@@ -11,7 +13,7 @@ while True:
         break
     else:
         print('Incorrect Username and/or password, Try Again!')
-        username = input('Username: ')
+        username =   input('Username: ')
         password = getpass('password: ')
         secret   = getpass('secret: ')
 
