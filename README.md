@@ -21,7 +21,7 @@
 ## Quick Overview
 
 - **Routing:** OSPF (with static route redistribution)
-- **Security:** Zone-Based Firewall, Policy NAT
+- **Security:** Zone-Based Firewall, Policy NAT, Static NAT and PAT.
 - **Monitoring:** IPSLA with Object tracking, Zabbix monitoring server.
 
 ---
