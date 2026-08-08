@@ -53,6 +53,18 @@ ip sla schedule 2 life forever start-time now
 
 ---
 
+## NAT and PAT
+The IOZ-ZBF firewall does not only Zone-based firewall, but also Network address translation (Static translation) and Port address translation.
+For static NAT, the host address 192.168.30.100 is  statically translated to 10.21.0.2 for DNS,DHCP and NTP services.
+
+```bash
+ip nat inside source static udp 192.168.30.100 53 10.21.0.2 53 extendable
+ip nat inside source static udp 192.168.30.100 67 10.21.0.2 67 extendable
+ip nat inside source static udp 192.168.30.100 123 10.21.0.2 123 extendable
+ip nat inside source static tcp 192.168.30.100 22 10.21.0.2 220 extendable
+
+```
+
 ## Verification the Gateway Router
 ```bash
 GATEWAY-ROUTER#sh ip route ospf
