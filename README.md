@@ -55,7 +55,7 @@ ip sla schedule 2 life forever start-time now
 
 ## NAT and PAT
 The IOZ-ZBF firewall does not only Zone-based firewall, but also Network address translation (Static translation) and Port address translation.
-For static NAT, the host address 192.168.30.100 is  statically translated to 10.21.0.2 for DNS,DHCP and NTP services.
+For static NAT, the host address 192.168.30.100 is  statically translated to 10.21.0.2 for DNS,DHCP,SSH and NTP services.
 
 ```bash
 ip nat inside source static udp 192.168.30.100 53 10.21.0.2 53 extendable
